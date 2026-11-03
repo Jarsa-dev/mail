@@ -10,7 +10,6 @@ LibreOffice headless must be installed; if it is absent the endpoint returns
 HTTP 503.
 """
 
-import base64
 import hashlib
 import io
 import logging
@@ -91,7 +90,7 @@ class MailAttachmentOfficePreviewController(http.Controller):
 
         Query params:
             model    – Odoo model name (e.g. 'ir.attachment')
-            field    – binary field name (e.g. 'datas')
+            field    – binary field name (e.g. 'raw')
             id       – record id (integer)
             filename – original filename (used to derive the extension)
         """
@@ -111,8 +110,7 @@ class MailAttachmentOfficePreviewController(http.Controller):
         if not record:
             return request.make_response("Not found", status=404)
         # Record-level ACL: raises AccessError (-> 403) if the user can't read.
-        record.check_access_rights("read")
-        record.check_access_rule("read")
+        record.check_access("read")
 
         # The field must exist on the model AND be a binary field — never read
         # an arbitrary attribute supplied in the query string.
@@ -124,11 +122,10 @@ class MailAttachmentOfficePreviewController(http.Controller):
         if not raw:
             return request.make_response("No content", status=404)
 
-        content = base64.b64decode(raw)
-        if len(content) > MAX_CONTENT_BYTES:
+        if raw.size > MAX_CONTENT_BYTES:
             return request.make_response("Document too large to preview", status=413)
 
-        pdf_bytes = self._get_pdf_cached(content, ext)
+        pdf_bytes = self._get_pdf_cached(raw.content, ext)
         if pdf_bytes is None:
             return request.make_response(
                 "LibreOffice not available — cannot convert document", status=503
@@ -184,7 +181,10 @@ class MailAttachmentOfficePreviewController(http.Controller):
 
     @staticmethod
     def _cache_path(key):
-        """Return the cache file path for ``key`` under the filestore, or None."""
+        """Return the cache file path for ``key`` under the filestore, or None.
+
+        Any error returns None: caching must never break the preview.
+        """
         try:
             base = os.path.join(
                 tools.config.filestore(request.env.cr.dbname),
@@ -192,7 +192,7 @@ class MailAttachmentOfficePreviewController(http.Controller):
             )
             os.makedirs(base, exist_ok=True)
             return os.path.join(base, f"{key}.pdf")
-        except Exception:  # pragma: no cover - never let caching break preview
+        except Exception:  # noqa: BLE001  # pragma: no cover
             return None
 
     @staticmethod
@@ -216,7 +216,7 @@ class MailAttachmentOfficePreviewController(http.Controller):
                         data = TOP_LEFT_CELL_RE.sub(b"", data)
                     zout.writestr(item, data)
             return out.getvalue()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:  # noqa: BLE001  # pylint: disable=broad-except
             return content
 
     @staticmethod
@@ -255,6 +255,7 @@ class MailAttachmentOfficePreviewController(http.Controller):
                     ],
                     timeout=CONVERT_TIMEOUT,
                     capture_output=True,
+                    check=False,
                 )
                 if result.returncode != 0:
                     _logger.warning(

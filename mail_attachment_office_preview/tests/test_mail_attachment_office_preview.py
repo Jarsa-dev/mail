@@ -1,7 +1,6 @@
 # Copyright 2026 Jarsa
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import base64
 import io
 import os
 import subprocess
@@ -9,6 +8,9 @@ import zipfile
 from unittest.mock import MagicMock, patch
 
 from werkzeug.wrappers import Response
+
+from odoo.exceptions import AccessError
+from odoo.tests import new_test_user
 
 from odoo.addons.base.tests.common import BaseCommon
 
@@ -18,12 +20,14 @@ from ..controllers.main import MailAttachmentOfficePreviewController
 class TestOfficeToPdfController(BaseCommon):
     """Unit tests for the LibreOffice conversion controller."""
 
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.docx_content = base64.b64encode(b"fake docx content")
+        cls.docx_content = b"fake docx content"
         cls.attachment = cls.env["ir.attachment"].create(
-            {"name": "report.docx", "datas": cls.docx_content}
+            {"name": "report.docx", "raw": cls.docx_content}
         )
         cls.controller = MailAttachmentOfficePreviewController()
 
@@ -77,28 +81,35 @@ class TestOfficeToPdfController(BaseCommon):
 
     def test_libreoffice_nonzero_exit_returns_none(self):
         """Returns None when LibreOffice exits with non-zero code."""
-        with patch(
-            "odoo.addons.mail_attachment_office_preview.controllers.main.subprocess.run",
-            return_value=self._make_fake_completed_process(returncode=1),
+        with (
+            patch(
+                "odoo.addons.mail_attachment_office_preview.controllers.main."
+                "subprocess.run",
+                return_value=self._make_fake_completed_process(returncode=1),
+            ),
+            self.assertLogs(
+                "odoo.addons.mail_attachment_office_preview.controllers.main",
+                level="WARNING",
+            ),
         ):
             result = self.controller._libreoffice_to_pdf(b"content", "docx")
         self.assertIsNone(result)
 
     # -- route handler (office_to_pdf) branch coverage -------------------------
 
-    def _call_route(self, **over):
-        """Invoke office_to_pdf with ``request`` patched to the test env;
-        return the resulting werkzeug Response."""
+    def _call_route(self, env=None, **over):
+        """Invoke office_to_pdf with ``request`` patched to the test env
+        (or to ``env``); return the resulting werkzeug Response."""
 
         def make_response(data, status=200, headers=None):
             return Response(data, status=status, headers=headers or [])
 
         fake_request = MagicMock()
-        fake_request.env = self.env
+        fake_request.env = env or self.env
         fake_request.make_response.side_effect = make_response
         params = {
             "model": "ir.attachment",
-            "field": "datas",
+            "field": "raw",
             "id": self.attachment.id,
             "filename": "report.docx",
         }
@@ -112,6 +123,13 @@ class TestOfficeToPdfController(BaseCommon):
     def test_route_bad_id(self):
         """A non-integer id yields HTTP 400."""
         self.assertEqual(self._call_route(id="not-an-int").status_code, 400)
+
+    def test_route_access_denied(self):
+        """A user who cannot read the record gets an AccessError (HTTP 403)
+        before its content is read."""
+        user = new_test_user(self.env, login="office_preview_user")
+        with self.assertRaises(AccessError):
+            self._call_route(env=self.env(user=user))
 
     def test_route_no_content(self):
         """A record with no binary content yields HTTP 404."""
@@ -149,7 +167,7 @@ class TestOfficeToPdfController(BaseCommon):
     def test_route_odf_extension_accepted(self):
         """ODF formats (e.g. .ods) are converted, not just OOXML."""
         ods = self.env["ir.attachment"].create(
-            {"name": "sheet.ods", "datas": base64.b64encode(b"fake ods")}
+            {"name": "sheet.ods", "raw": b"fake ods"}
         )
         with patch(
             "odoo.addons.mail_attachment_office_preview.controllers.main."
@@ -162,7 +180,7 @@ class TestOfficeToPdfController(BaseCommon):
     def test_route_macro_enabled_extension_accepted(self):
         """Macro-enabled OOXML formats (e.g. .xlsm) are converted too."""
         xlsm = self.env["ir.attachment"].create(
-            {"name": "macros.xlsm", "datas": base64.b64encode(b"fake xlsm")}
+            {"name": "macros.xlsm", "raw": b"fake xlsm"}
         )
         with patch(
             "odoo.addons.mail_attachment_office_preview.controllers.main."
@@ -187,7 +205,7 @@ class TestOfficeToPdfController(BaseCommon):
         big = self.env["ir.attachment"].create(
             {
                 "name": "big.docx",
-                "datas": base64.b64encode(b"x" * 16),
+                "raw": b"x" * 16,
             }
         )
         with patch.object(ctrl, "MAX_CONTENT_BYTES", 8):
@@ -241,7 +259,8 @@ class TestOfficeToPdfController(BaseCommon):
             if captured["has_xcu"]:
                 with open(xcu, encoding="utf-8") as fh:
                     captured["xcu"] = fh.read()
-            return self._make_fake_completed_process(returncode=1)
+            # Clean exit without output PDF: no conversion-failure warning.
+            return self._make_fake_completed_process(returncode=0)
 
         with patch(
             "odoo.addons.mail_attachment_office_preview.controllers.main.subprocess.run",
@@ -283,7 +302,8 @@ class TestOfficeToPdfController(BaseCommon):
 
         def fake_run(cmd, **kwargs):
             captured["cmd"] = cmd
-            return self._make_fake_completed_process(returncode=1)
+            # Clean exit without output PDF: no conversion-failure warning.
+            return self._make_fake_completed_process(returncode=0)
 
         with patch(
             "odoo.addons.mail_attachment_office_preview.controllers.main.subprocess.run",

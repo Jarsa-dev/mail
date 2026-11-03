@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-inherit="web.FileViewer" t-inherit-mode="extension">
-        <xpath expr="//iframe[@t-ref='iframeViewerPdf']" position="attributes">
-            <attribute name="t-if">state.file.isPdf and !state.officeLoading</attribute>
+        <xpath expr="//iframe[@t-ref='this.iframeViewerPdfRef']" position="attributes">
+            <attribute
+                name="t-if"
+            >this.state.file.isPdf and !this.state.officeLoading</attribute>
         </xpath>
-        <xpath expr="//iframe[@t-ref='iframeViewerPdf']" position="before">
+        <xpath expr="//iframe[@t-ref='this.iframeViewerPdfRef']" position="before">
             <div
-                t-if="state.officeLoading"
+                t-if="this.state.officeLoading"
                 class="d-flex flex-column align-items-center text-white"
                 t-on-click.stop=""
             >
                 <i
-                    class="fa fa-circle-o-notch fa-spin fa-3x mb-3"
+                    class="oi oi-3x oi-fw oi-spin mb-3"
+                    data-icon="autorenew"
                     role="img"
                     aria-label="Loading"
                 />

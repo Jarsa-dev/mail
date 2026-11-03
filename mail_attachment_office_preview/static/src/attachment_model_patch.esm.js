@@ -1,4 +1,3 @@
-/** @odoo-module **/
 /* Copyright 2026 Jarsa
  * License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). */
 
@@ -47,10 +46,23 @@ patch(Attachment.prototype, {
     get officePdfUrl() {
         return url("/mail_attachment_office_preview/to_pdf", {
             model: "ir.attachment",
-            field: "datas",
+            field: "raw",
             id: this.id,
-            filename: this.displayName || `file.${this.extension}`,
+            filename: this.name || `file.${this.extension}`,
         });
+    },
+    /**
+     * The thumbnail of a PDF attachment is rendered from its first page by
+     * the server, which only works on real PDF files: office files keep the
+     * generic mimetype icon.
+     *
+     * @override
+     */
+    async setThumbnail() {
+        if (this.isOffice) {
+            return;
+        }
+        return super.setThumbnail(...arguments);
     },
     /**
      * @override
