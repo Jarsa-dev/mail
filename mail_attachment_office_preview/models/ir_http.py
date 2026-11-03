@@ -13,9 +13,9 @@ class IrHttp(models.AbstractModel):
         # the preview button is simply not shown on servers without LibreOffice
         # instead of opening a viewer that errors out with HTTP 503.
         info = super().session_info()
-        info[
-            "mail_attachment_office_preview_available"
-        ] = self._mail_attachment_office_preview_available()
+        info["mail_attachment_office_preview_available"] = (
+            self._mail_attachment_office_preview_available()
+        )
         return info
 
     @staticmethod
