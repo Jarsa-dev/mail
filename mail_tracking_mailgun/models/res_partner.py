@@ -57,7 +57,7 @@ class ResPartner(models.Model):
         timeout = (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("mailgun.timeout", MAILGUN_TIMEOUT)
+            .get_int("mailgun.timeout", MAILGUN_TIMEOUT)
         )
         if not params.validation_key:
             raise UserError(
@@ -79,19 +79,17 @@ class ResPartner(models.Model):
                 and not self.env.context.get("mailgun_auto_check")
             ):
                 raise UserError(
-                    self.env._(
-                        f"Error {res.status_code} trying to check mail"
-                        or "of connection"
-                    )
+                    self.env._("Error %s trying to check mail", res.status_code)
                 )
             content = res.json()
-            if "mailbox_verification" not in content:
-                if not self.env.context.get("mailgun_auto_check"):
-                    raise UserError(
-                        self.env._(
-                            "Mailgun Error. Mailbox verification value wasn't returned"
-                        )
+            if "mailbox_verification" not in content and not self.env.context.get(
+                "mailgun_auto_check"
+            ):
+                raise UserError(
+                    self.env._(
+                        "Mailgun Error. Mailbox verification value wasn't returned"
                     )
+                )
             # Not a valid address: API sets 'is_valid' as False
             # and 'mailbox_verification' as None
             if not content["is_valid"]:
@@ -118,16 +116,17 @@ class ResPartner(models.Model):
                 partner.message_post(body=body)
             # If Mailgun can't complete the validation request the API returns
             # 'mailbox_verification' as a string set to 'unknown'
-            if content["mailbox_verification"] == "unknown":
-                if not self.env.context.get("mailgun_auto_check"):
-                    raise UserError(
-                        self.env._(
-                            "%s couldn't be verified. Either the request couln't"
-                            " be completed or the mailbox provider doesn't "
-                            "support email verification",
-                            partner.email,
-                        )
+            if content[
+                "mailbox_verification"
+            ] == "unknown" and not self.env.context.get("mailgun_auto_check"):
+                raise UserError(
+                    self.env._(
+                        "%s couldn't be verified. Either the request couln't"
+                        " be completed or the mailbox provider doesn't "
+                        "support email verification",
+                        partner.email,
                     )
+                )
 
     def check_email_bounced(self):
         """
@@ -141,7 +140,7 @@ class ResPartner(models.Model):
         timeout = (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("mailgun.timeout", MAILGUN_TIMEOUT)
+            .get_int("mailgun.timeout", MAILGUN_TIMEOUT)
         )
         for partner in self:
             res = requests.get(
@@ -166,11 +165,11 @@ class ResPartner(models.Model):
         timeout = (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("mailgun.timeout", MAILGUN_TIMEOUT)
+            .get_int("mailgun.timeout", MAILGUN_TIMEOUT)
         )
         for partner in self:
             res = requests.post(
-                urljoin(api_url, "/v3/{domain}/bounces"),
+                urljoin(api_url, f"/v3/{domain}/bounces"),
                 auth=("api", api_key),
                 data={"address": partner.email},
                 timeout=timeout,
@@ -189,7 +188,7 @@ class ResPartner(models.Model):
         timeout = (
             self.env["ir.config_parameter"]
             .sudo()
-            .get_param("mailgun.timeout", MAILGUN_TIMEOUT)
+            .get_int("mailgun.timeout", MAILGUN_TIMEOUT)
         )
         for partner in self:
             res = requests.delete(

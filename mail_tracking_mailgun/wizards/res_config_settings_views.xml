@@ -100,7 +100,7 @@
                                 type="object"
                                 name="mail_tracking_mailgun_unregister_webhooks"
                                 string="Unregister Mailgun webhooks"
-                                icon="fa-arrow-right"
+                                icon="east"
                                 class="btn-link"
                                 confirm="This will unregister ALL webhooks from Mailgun, which can include webhooks for other apps."
                             />
@@ -108,7 +108,7 @@
                                 type="object"
                                 name="mail_tracking_mailgun_register_webhooks"
                                 string="Register Mailgun webhooks"
-                                icon="fa-arrow-right"
+                                icon="east"
                                 class="btn-link"
                             />
                         </div>

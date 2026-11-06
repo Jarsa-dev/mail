@@ -1,4 +1,4 @@
-This module integrates mail_tracking events with Mailgun webhooks.
+This module integrates mail_recipient_tracking events with Mailgun webhooks.
 
 [Mailgun](https://www.mailgun.com) is a service that provides an
 e-mail sending infrastructure through an SMTP server or via API. You can

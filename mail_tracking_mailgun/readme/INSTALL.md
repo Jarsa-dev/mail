@@ -4,4 +4,4 @@ database, then you need to add `mail_tracking_mailgun` addon to wide
 load addons list (by default, only `web` addon), setting `--load`
 option.
 
-Example: `--load=web,mail_tracking,mail_tracking_mailgun`
+Example: `--load=web,mail_recipient_tracking,mail_tracking_mailgun`

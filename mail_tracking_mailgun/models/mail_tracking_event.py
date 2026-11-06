@@ -14,7 +14,7 @@ class MailTrackingEvent(models.Model):
 
     mailgun_id = fields.Char(
         string="Mailgun Event ID",
-        copy="False",
+        copy=False,
         readonly=True,
         index=True,
     )

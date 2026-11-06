@@ -13,7 +13,7 @@ from odoo.http import request, route
 
 from odoo.addons.web.controllers.utils import ensure_db
 
-from ...mail_tracking.controllers import main
+from ...mail_recipient_tracking.controllers import main
 
 _logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 In your mail tracking status screens (explained on module
-*mail_tracking*), you will see a more accurate information, like the
+*mail_recipient_tracking*), you will see a more accurate information, like the
 'Received' or 'Bounced' status, which are not usually detected by normal
 SMTP servers.
 

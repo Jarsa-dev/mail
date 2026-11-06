@@ -7,7 +7,7 @@
     <record id="view_partner_form_mailgun" model="ir.ui.view">
         <field name="name">Partner Mailgun button</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="mail_tracking.view_partner_form" />
+        <field name="inherit_id" ref="mail_recipient_tracking.view_partner_form" />
         <field name="arch" type="xml">
             <field name="email_bounced" position="after">
                 <label

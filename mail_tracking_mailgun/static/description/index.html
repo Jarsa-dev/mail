@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
-<title>README.rst</title>
+<title>Mail tracking for Mailgun</title>
 <style type="text/css">
 
 /*
@@ -374,8 +374,9 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:595a29b2074b7721b1619887a3ce84c1d5954a884a51aea6d483715f59e2a51d
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/mail/tree/19.0/mail_tracking_mailgun"><img alt="OCA/mail" src="https://img.shields.io/badge/github-OCA%2Fmail-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/mail-19-0/mail-19-0-mail_tracking_mailgun"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/mail&amp;target_branch=19.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
-<p>This module integrates mail_tracking events with Mailgun webhooks.</p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/mail/tree/20.0/mail_tracking_mailgun"><img alt="OCA/mail" src="https://img.shields.io/badge/github-OCA%2Fmail-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/mail-20-0/mail-20-0-mail_tracking_mailgun"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/mail&amp;target_branch=20.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
+<p>This module integrates mail_recipient_tracking events with Mailgun
+webhooks.</p>
 <p><a class="reference external" href="https://www.mailgun.com">Mailgun</a> is a service that provides an
 e-mail sending infrastructure through an SMTP server or via API. You can
 also query that API for seeing statistics of your sent e-mails, or
@@ -408,7 +409,7 @@ option) where /web/databse/selector returns a list of more than one
 database, then you need to add <tt class="docutils literal">mail_tracking_mailgun</tt> addon to wide
 load addons list (by default, only <tt class="docutils literal">web</tt> addon), setting <tt class="docutils literal"><span class="pre">--load</span></tt>
 option.</p>
-<p>Example: <tt class="docutils literal"><span class="pre">--load=web,mail_tracking,mail_tracking_mailgun</span></tt></p>
+<p>Example: <tt class="docutils literal"><span class="pre">--load=web,mail_recipient_tracking,mail_tracking_mailgun</span></tt></p>
 </div>
 <div class="section" id="configuration">
 <h2><a class="toc-backref" href="#toc-entry-2">Configuration</a></h2>
@@ -430,9 +431,9 @@ with Mailgun</em>.</li>
 <div class="section" id="usage">
 <h2><a class="toc-backref" href="#toc-entry-3">Usage</a></h2>
 <p>In your mail tracking status screens (explained on module
-<em>mail_tracking</em>), you will see a more accurate information, like the
-‘Received’ or ‘Bounced’ status, which are not usually detected by normal
-SMTP servers.</p>
+<em>mail_recipient_tracking</em>), you will see a more accurate information,
+like the ‘Received’ or ‘Bounced’ status, which are not usually detected
+by normal SMTP servers.</p>
 <p>It’s also possible to make some checks to the partner’s email addresses
 against the Mailgun API:</p>
 <ul class="simple">
@@ -463,7 +464,7 @@ complexities</a>.</li>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/mail/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/OCA/mail/issues/new?body=module:%20mail_tracking_mailgun%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/OCA/mail/issues/new?body=module:%20mail_tracking_mailgun%0Aversion:%2020.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -509,7 +510,7 @@ Icon</a>.</li>
 <p>OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.</p>
-<p>This module is part of the <a class="reference external" href="https://github.com/OCA/mail/tree/19.0/mail_tracking_mailgun">OCA/mail</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/mail/tree/20.0/mail_tracking_mailgun">OCA/mail</a> project on GitHub.</p>
 <p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
 </div>
 </div>
