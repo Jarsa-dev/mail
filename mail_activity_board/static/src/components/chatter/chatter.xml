@@ -6,16 +6,16 @@
         t-inherit-mode="extension"
     >
         <xpath expr="//button[hasclass('o-mail-Chatter-activity')]" position="after">
-            <t t-if="props.has_activities">
-                <button
-                    class="btn btn-link o_ChatterTopbar_button"
-                    type="button"
-                    t-att-disabled="!state.thread.hasWriteAccess"
-                    t-on-click="_onListActivity"
-                >
-                    <i class="fa fa-list" /> View Activities
-                </button>
-            </t>
+            <button
+                t-if="this.webChatterProps.has_activities"
+                class="o-mail-Chatter-listActivity btn btn-secondary text-nowrap"
+                type="button"
+                t-att-disabled="!this.thread().hasWriteAccess or !this.thread().id"
+                t-on-click="this.onClickListActivity"
+            >
+                <i class="oi me-1" data-icon="format_list_bulleted" />
+                <span>View Activities</span>
+            </button>
         </xpath>
     </t>
 </templates>

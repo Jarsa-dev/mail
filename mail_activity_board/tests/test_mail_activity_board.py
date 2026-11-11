@@ -127,17 +127,14 @@ class TestMailActivityBoardMethods(TransactionCase):
             .sudo()
             .search([("model", "=", "mail.activity")], limit=1)
         )
-        access = self.env["ir.model.access"].create(
+        self.env["ir.access"].create(
             {
                 "name": "full_access_mail_activity",
                 "model_id": mail_activity_model_id.id,
-                "perm_read": True,
-                "perm_write": True,
-                "perm_create": True,
-                "perm_unlink": True,
+                "group_id": manager_mail_activity_test_group.id,
+                "operation": "crud",
             }
         )
-        access.group_id = manager_mail_activity_test_group
         return manager_mail_activity_test_group
 
     def get_view(self, activity):

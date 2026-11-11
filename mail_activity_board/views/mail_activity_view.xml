@@ -14,12 +14,15 @@
         <field name="model">mail.activity</field>
         <field name="inherit_id" ref="mail.mail_activity_view_form_popup" />
         <field name="arch" type="xml">
-            <field name="activity_type_id" position="before">
-                <field
-                    name="related_model_instance"
+            <xpath expr="//div[@name='activity_details']/div[1]" position="before">
+                <div
+                    class="o_outlined d-flex align-items-baseline mb-2 gap-2"
                     invisible="not related_model_instance"
-                />
-            </field>
+                >
+                    <i class="oi" data-icon="article" title="Document" />
+                    <field name="related_model_instance" nolabel="1" class="w-100" />
+                </div>
+            </xpath>
         </field>
     </record>
 
@@ -58,22 +61,14 @@
         <field name="mode">extension</field>
         <field name="arch" type="xml">
             <xpath expr='//field[@name="activity_type_id"]' position='after'>
-                <field name="user_id" />
                 <field name="res_name" string="Origin" />
             </xpath>
 
-            <xpath
-                expr='//filter[@name="filter_date_deadline_future"]'
-                position='after'
-            >
+            <xpath expr='//filter[@name="activities_upcoming_all"]' position='after'>
                 <filter
                     string="Deadline"
-                    name="date_deadline"
+                    name="filter_date_deadline"
                     date="date_deadline"
-                    start_year="0"
-                    start_month="-1"
-                    end_year="2"
-                    end_month="2"
                 />
             </xpath>
         </field>
@@ -93,9 +88,7 @@
         id="mail.mail_activity_action_my_view_tree"
         model="ir.actions.act_window.view"
     >
-        <field name="view_mode">list</field>
         <field name="sequence" eval="2" />
-        <field name="act_window_id" ref="mail.mail_activity_action_my" />
     </record>
     <record id="mail_activity_action_my_view_form" model="ir.actions.act_window.view">
         <field name="sequence" eval="3" />
@@ -107,18 +100,18 @@
         model="ir.actions.act_window.view"
     >
         <field name="sequence" eval="4" />
-        <field name="view_mode">calendar</field>
-        <field name="act_window_id" ref="mail.mail_activity_action_my" />
     </record>
-    <record id="mail_activity_action_my_view_pivot" model="ir.actions.act_window.view">
+    <record
+        id="mail.mail_activity_action_my_view_pivot"
+        model="ir.actions.act_window.view"
+    >
         <field name="sequence" eval="5" />
-        <field name="view_mode">pivot</field>
-        <field name="act_window_id" ref="mail.mail_activity_action_my" />
     </record>
-    <record id="mail_activity_action_my_view_graph" model="ir.actions.act_window.view">
+    <record
+        id="mail.mail_activity_action_my_view_graph"
+        model="ir.actions.act_window.view"
+    >
         <field name="sequence" eval="6" />
-        <field name="view_mode">graph</field>
-        <field name="act_window_id" ref="mail.mail_activity_action_my" />
     </record>
     <record id="mail.mail_activity_action_my" model="ir.actions.act_window">
         <field name="name">Activities</field>

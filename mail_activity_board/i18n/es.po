@@ -18,6 +18,11 @@ msgstr ""
 "X-Generator: Weblate 4.17\n"
 
 #. module: mail_activity_board
+#: model_terms:ir.ui.view,arch_db:mail_activity_board.mail_activity_view_form_popup
+msgid "<i class=\"oi\" data-icon=\"article\" title=\"Document\"/>"
+msgstr "<i class=\"oi\" data-icon=\"article\" title=\"Documento\"/>"
+
+#. module: mail_activity_board
 #: model:ir.model,name:mail_activity_board.model_mail_activity
 msgid "Activity"
 msgstr "Actividad"
@@ -35,7 +40,7 @@ msgstr "Asistentes"
 #. module: mail_activity_board
 #: model_terms:ir.ui.view,arch_db:mail_activity_board.mail_activity_view_search
 msgid "Deadline"
-msgstr ""
+msgstr "Fecha límite"
 
 #. module: mail_activity_board
 #: model:ir.model.fields,field_description:mail_activity_board.field_mail_activity__related_model_instance
