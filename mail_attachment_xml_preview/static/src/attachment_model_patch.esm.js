@@ -1,9 +1,9 @@
-/** @odoo-module **/
 /* Copyright 2026 Jarsa
  * License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). */
 
 import {Attachment} from "@mail/core/common/attachment_model";
 import {patch} from "@web/core/utils/patch";
+import {url} from "@web/core/utils/urls";
 
 patch(Attachment.prototype, {
     /**
@@ -20,12 +20,12 @@ patch(Attachment.prototype, {
         );
     },
     /**
-     * XML files are rendered by our own viewer, not by the plain-text iframe.
-     *
-     * @override
+     * Raw content of the file. ``defaultSource`` can't be used: for text
+     * files it points to ``/mail/attachment/render_text``, which wraps the
+     * content in an HTML page.
      */
-    get isText() {
-        return super.isText && !this.isXml;
+    get xmlRawUrl() {
+        return url(`/web/content/${this.id}`, this.urlQueryParams);
     },
     /**
      * @override

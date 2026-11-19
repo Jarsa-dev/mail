@@ -4,77 +4,60 @@
     <t t-name="mail_attachment_xml_preview.XmlViewer">
         <div
             class="o-FileViewer-view o_xml_viewer w-75 h-100 overflow-auto p-3"
-            t-att-class="{'w-100': ui.isSmall}"
+            t-att-class="{'w-100': this.ui.isSmall}"
             t-on-click.stop=""
         >
-            <div t-if="state.loading" class="text-center p-4">
+            <div t-if="this.state.loading" class="text-center p-4">
                 <i
-                    class="fa fa-circle-o-notch fa-spin fa-2x"
+                    class="oi oi-3x oi-fw oi-spin"
+                    data-icon="autorenew"
                     role="img"
                     aria-label="Loading"
                 />
             </div>
-            <pre t-elif="state.raw" class="o_xml_viewer_raw" t-esc="state.raw" />
-            <t t-else="" t-call="mail_attachment_xml_preview.XmlNode">
-                <t t-set="node" t-value="state.node" />
-            </t>
+            <XmlNode t-elif="this.state.node" node="this.state.node" />
+            <pre t-else="" class="o_xml_viewer_raw" t-out="this.state.raw" />
         </div>
     </t>
 
     <t t-name="mail_attachment_xml_preview.XmlNode">
+        <t t-set="node" t-value="this.props.node" />
         <t t-if="node.type === 'element'">
             <details t-if="node.isBranch" class="o_xml_node" open="open">
                 <summary>
-                    <span class="o_xml_tag">
-                        &lt;
-                        <t t-esc="node.tag" />
-                    </span>
+                    <span class="o_xml_tag" t-out="'&lt;' + node.tag" />
                     <t t-call="mail_attachment_xml_preview.XmlAttributes" />
-                    <span class="o_xml_tag">
-                        &gt;
-                    </span>
+                    <span class="o_xml_tag" t-out="'&gt;'" />
                 </summary>
                 <div class="o_xml_children">
                     <t t-foreach="node.children" t-as="child" t-key="child_index">
-                        <t t-call="mail_attachment_xml_preview.XmlNode">
-                            <t t-set="node" t-value="child" />
-                        </t>
+                        <XmlNode node="child" />
                     </t>
                 </div>
-                <div class="o_xml_tag">&lt;/<t t-esc="node.tag" />&gt;</div>
+                <div class="o_xml_tag">&lt;/<t t-out="node.tag" />&gt;</div>
             </details>
             <div t-else="" class="o_xml_node">
-                <span class="o_xml_tag">
-                    &lt;
-                    <t t-esc="node.tag" />
-                </span>
+                <span class="o_xml_tag" t-out="'&lt;' + node.tag" />
                 <t t-call="mail_attachment_xml_preview.XmlAttributes" />
                 <t t-if="node.text">
-                    <span class="o_xml_tag">
-                        &gt;
-                    </span>
-                    <span class="o_xml_text">
-                        <t t-esc="node.text" />
-                    </span>
-                    <span class="o_xml_tag">&lt;/<t t-esc="node.tag" />&gt;</span>
+                    <span class="o_xml_tag" t-out="'&gt;'" />
+                    <span class="o_xml_text" t-out="node.text" />
+                    <span class="o_xml_tag">&lt;/<t t-out="node.tag" />&gt;</span>
                 </t>
                 <span t-else="" class="o_xml_tag"> /&gt;</span>
             </div>
         </t>
         <div t-elif="node.type === 'comment'" class="o_xml_comment">&lt;!-- <t
-            t-esc="node.value"
+            t-out="node.value"
         /> --&gt;</div>
-        <div t-else="" class="o_xml_text">
-            <t t-esc="node.value" />
-        </div>
+        <div t-else="" class="o_xml_text" t-out="node.value" />
     </t>
 
     <t t-name="mail_attachment_xml_preview.XmlAttributes">
-        <t t-foreach="node.attrs" t-as="attr" t-key="attr.name"><span
+        <t t-foreach="node.attrs" t-as="attr" t-key="attr.name"> <span
             class="o_xml_attr_name"
-        >
-            <t t-esc="attr.name" />
-        </span>=<span class="o_xml_attr_value">"<t t-esc="attr.value" />"</span></t>
+            t-out="attr.name"
+        />=<span class="o_xml_attr_value">"<t t-out="attr.value" />"</span></t>
     </t>
 
 </templates>

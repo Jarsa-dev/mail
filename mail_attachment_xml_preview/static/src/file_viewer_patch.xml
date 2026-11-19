@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-inherit="web.FileViewer" t-inherit-mode="extension">
-        <xpath expr="//iframe[@t-ref='iframeViewerPdf']" position="before">
-            <XmlViewer t-if="state.file.isXml" file="state.file" />
+        <!-- XML files keep being "text" for the rest of the UI (the thumbnail
+             of their card), only the plain-text iframe is replaced. -->
+        <xpath expr="//iframe[hasclass('o-isText')]" position="attributes">
+            <attribute
+                name="t-if"
+            >this.state.file.isText and !this.state.file.isXml</attribute>
+        </xpath>
+        <xpath expr="//iframe[hasclass('o-isText')]" position="before">
+            <XmlViewer
+                t-if="this.state.file.isXml"
+                t-key="this.state.file.id"
+                file="this.state.file"
+            />
         </xpath>
     </t>
 </templates>

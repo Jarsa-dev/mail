@@ -1,8 +1,7 @@
-/** @odoo-module **/
 /* Copyright 2026 Jarsa
  * License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). */
 
-import {Component, onWillStart, onWillUpdateProps, useState} from "@odoo/owl";
+import {Component, onWillStart, proxy, t, useProps} from "@odoo/owl";
 import {useService} from "@web/core/utils/hooks";
 
 // Above this size the file is shown as raw text: parsing (and rendering) a
@@ -60,32 +59,37 @@ export function parseXml(text) {
     return buildNode(doc.documentElement);
 }
 
+/**
+ * One node of the tree. A component (instead of a recursive ``t-call``) keeps
+ * each level with its own ``node`` prop.
+ */
+export class XmlNode extends Component {
+    static template = "mail_attachment_xml_preview.XmlNode";
+    static components = {};
+    props = useProps({node: t.object()});
+}
+XmlNode.components = {XmlNode};
+
 export class XmlViewer extends Component {
     static template = "mail_attachment_xml_preview.XmlViewer";
-    static props = {file: Object};
+    static components = {XmlNode};
+    props = useProps({file: t.object()});
 
     setup() {
-        this.state = useState({node: null, raw: "", loading: true});
-        this.ui = useState(useService("ui"));
-        // The viewer keeps the same component alive when navigating between
-        // files, so the load is guarded against out-of-order responses.
-        this.loadId = 0;
+        this.state = proxy({node: null, raw: "", loading: true});
+        this.ui = useService("ui");
+        // The file viewer gives a ``t-key`` to this component, so moving to
+        // another file mounts a new viewer instead of updating this one.
         onWillStart(() => this.loadFile(this.props.file));
-        onWillUpdateProps((nextProps) => this.loadFile(nextProps.file));
     }
 
     async loadFile(file) {
-        const loadId = ++this.loadId;
-        Object.assign(this.state, {node: null, raw: "", loading: true});
         let text = "";
         try {
-            const response = await fetch(file.defaultSource);
-            text = await response.text();
+            const response = await fetch(file.xmlRawUrl);
+            text = response.ok ? await response.text() : "";
         } catch {
             text = "";
-        }
-        if (loadId !== this.loadId) {
-            return;
         }
         try {
             if (text.length > MAX_XML_SIZE) {

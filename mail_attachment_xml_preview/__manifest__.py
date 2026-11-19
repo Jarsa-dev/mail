@@ -3,7 +3,7 @@
 {
     "name": "Mail Attachment XML Preview",
     "summary": "Preview XML attachments as a collapsible tree instead of raw text",
-    "version": "17.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Social Network",
     "website": "https://github.com/OCA/mail",
     "author": "Jarsa, Odoo Community Association (OCA)",
@@ -18,8 +18,8 @@
             "mail_attachment_xml_preview/static/src/file_viewer_patch.esm.js",
             "mail_attachment_xml_preview/static/src/file_viewer_patch.xml",
         ],
-        "web.qunit_suite_tests": [
-            "mail_attachment_xml_preview/static/tests/**/*.js",
+        "web.assets_unit_tests": [
+            "mail_attachment_xml_preview/static/tests/**/*",
         ],
     },
     "installable": True,
